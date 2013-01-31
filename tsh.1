@@ -1,0 +1,61 @@
+.\" Process this file with
+.\" groff -man -Tascii tsh.1
+.\"
+.TH TSH 2 "OCTOBER 2012" "NU EECS 343" "NU EECS 343 - Operating Systems - Fall 2012"
+.SH NAME
+tsh \- A tiny shell
+.SH SYNOPSIS
+.B tsh
+.SH DESCRIPTION
+.B 
+This is a more advanced shell implementation that includes bg process, SIGSTOP, piping, and IO redirection.
+
+It also has some bits of implementation of aliasing. 
+
+.SH BUILT-IN COMMANDS
+.IP 
+.IP
+  cd [dir]
+     Changes the current directoy to dir.
+.IP
+  pwd
+     Prints current working directory to console.
+.IP
+  exit
+     Exit shell
+
+.IP
+  fg 
+    Returns a backgrounded job to the foreground. It takes an optional job number as an
+    argument, defaulting to the most recently backgrounded job.
+
+.IP
+   bg 
+    Sends SIGCONT to a backgrounded job, but should not give it the foreground. (i.e., The
+    user should immediately be able to issue further commands.) It takes an optional argument that works
+    the same way as fg.
+
+.IP
+  jobs 
+    Prints out a table of all currently running jobs.
+
+
+
+.SH DESIGN APPROACH
+When implementing background functions we first created some helper functions to make bg process/delete them/add them to the linked list
+as well as get them by pid or jid. We needed to figure out how to run the background process such that the '&'
+is removed when using exec. In addition, we needed to change the way Exec worked by passing a boolean to tell if the process is 
+executing in the bg or fg. 
+
+Once that was done we implemented the builtin commands which we fairly simple. We added the sigchild handler functionality to the
+CheckJobs() function so that it would check if a bg job finished or was still running. 
+
+The toughest part was piping where we needed to figure out exactly how to pipe the two commands together. We eventually created a long function,
+similar to Exec that executed the code to get piping working. IO redirection was fairly easy in comparison.
+
+Extra Credit: The extra credit except for for the last one (test30). tests 27-29 do not work due to bugs in the formatting.
+For example the bash alias command lists the aliases in alphabetical order, but ours lists by when added. 
+.SH AUTHOR
+Name: Max Goldman, Ross Freiman, Angela Jiang
+netid: mag403, rhf687 anj777
+email: maxgoldman2013@u.northwestern.edu, rossfreiman2013@u.northwestern.edu, angelajiang2014@u.northwestern.edu
